@@ -279,9 +279,9 @@ RCT_EXPORT_METHOD(startUpload:(NSDictionary *)options resolve:(RCTPromiseResolve
 
             if ([fileURI length] > 0) {
                 uploadTask = [[self urlSession] uploadTaskWithRequest:request fromFile:[NSURL URLWithString: fileURI]];
-            } else if (body) {
-                reject(@"RN Uploader", [@"TESTING NSSTRING:" stringByAppendingString:body], nil);
-                // uploadTask = [[self urlSession] uploadTaskWithRequest:request fromData:body];
+            } else if ([body length] > 0) {
+                NSData *blobBody = [[NSData alloc] initWithBase64EncodedString:body options:0];
+                uploadTask = [[self urlSession] uploadTaskWithRequest:request fromData:blobBody];
             } else {
                 reject(@"RN Uploader", @"Either path or body parameter must be provided", nil);
                 return;
