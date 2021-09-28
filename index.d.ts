@@ -82,7 +82,7 @@ declare module "react-native-background-upload" {
     export interface UploadOptions {
         url: string;
         path?: string;
-        body?: Blob;
+        body?: strign;
         type?: 'raw' | 'multipart';
         method?: 'POST' | 'GET' | 'PUT' | 'PATCH' | 'DELETE';
         customUploadId?: string;

@@ -201,7 +201,7 @@ RCT_EXPORT_METHOD(startUpload:(NSDictionary *)options resolve:(RCTPromiseResolve
 
     NSString *uploadUrl = options[@"url"];
     __block NSString *fileURI = options[@"path"] ?: @"";
-    NSData *body = options[@"body"];
+    NSString *body = options[@"body"] ?: @"";
     NSString *method = options[@"method"] ?: @"POST";
     NSString *uploadType = options[@"type"] ?: @"raw";
     NSString *fieldName = options[@"field"];
@@ -280,7 +280,8 @@ RCT_EXPORT_METHOD(startUpload:(NSDictionary *)options resolve:(RCTPromiseResolve
             if ([fileURI length] > 0) {
                 uploadTask = [[self urlSession] uploadTaskWithRequest:request fromFile:[NSURL URLWithString: fileURI]];
             } else if (body) {
-                uploadTask = [[self urlSession] uploadTaskWithRequest:request fromData:body];
+                reject(@"RN Uploader", [@"TESTING NSSTRING:" stringByAppendingString:body], nil);
+                // uploadTask = [[self urlSession] uploadTaskWithRequest:request fromData:body];
             } else {
                 reject(@"RN Uploader", @"Either path or body parameter must be provided", nil);
                 return;
