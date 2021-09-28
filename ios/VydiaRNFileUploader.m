@@ -201,6 +201,7 @@ RCT_EXPORT_METHOD(startUpload:(NSDictionary *)options resolve:(RCTPromiseResolve
 
     NSString *uploadUrl = options[@"url"];
     __block NSString *fileURI = options[@"path"] ?: @"";
+    NSData *body = options[@"body"];
     NSString *method = options[@"method"] ?: @"POST";
     NSString *uploadType = options[@"type"] ?: @"raw";
     NSString *fieldName = options[@"field"];
@@ -258,6 +259,10 @@ RCT_EXPORT_METHOD(startUpload:(NSDictionary *)options resolve:(RCTPromiseResolve
         NSURLSessionUploadTask *uploadTask;
 
         if ([uploadType isEqualToString:@"multipart"]) {
+            if (body) {
+                reject(@"RN Uploader", @"Body supported only in raw type", nil);
+                return;
+            }
             NSString *uuidStr = [[NSUUID UUID] UUIDString];
             [request setValue:[NSString stringWithFormat:@"multipart/form-data; boundary=%@", uuidStr] forHTTPHeaderField:@"Content-Type"];
 
@@ -266,14 +271,20 @@ RCT_EXPORT_METHOD(startUpload:(NSDictionary *)options resolve:(RCTPromiseResolve
             [request setHTTPBody: httpBody];
             uploadTask = [[self urlSession] uploadTaskWithStreamedRequest:request];
 
-
         } else {
             if (parameters.count > 0) {
                 reject(@"RN Uploader", @"Parameters supported only in multipart type", nil);
                 return;
             }
 
-            uploadTask = [[self urlSession] uploadTaskWithRequest:request fromFile:[NSURL URLWithString: fileURI]];
+            if ([fileURI length] > 0) {
+                uploadTask = [[self urlSession] uploadTaskWithRequest:request fromFile:[NSURL URLWithString: fileURI]];
+            } else if (body) {
+                uploadTask = [[self urlSession] uploadTaskWithRequest:request fromData:body];
+            } else {
+                reject(@"RN Uploader", @"Either path or body parameter must be provided", nil);
+                return;
+            }
         }
 
         uploadTask.taskDescription = thisUploadId;

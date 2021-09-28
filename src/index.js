@@ -12,8 +12,12 @@ export type NotificationArgs = {
 
 export type StartUploadArgs = {
   url: string,
-  // Optional, if not given, must be multipart, can be used to upload form data
+  // Optional, if not given, must be multipart can be used to upload form data or body must be set
   path?: string,
+
+  // optional, can be defined instead of path for raw upload
+  body?: Blob,
+
   method?: 'PUT' | 'POST',
   // Optional, because raw is default
   type?: 'raw' | 'multipart',
