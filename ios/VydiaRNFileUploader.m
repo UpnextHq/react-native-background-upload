@@ -104,7 +104,7 @@ static VydiaRNFileUploader *sharedInstance;
 RCT_EXPORT_METHOD(setAppGroup:(NSString*) appGroup resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 {
     _globalAppGroup = appGroup;
-    resolve();
+    resolve(nil);
 }
 
 /*

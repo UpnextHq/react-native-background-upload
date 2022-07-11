@@ -173,4 +173,4 @@ export const endBackgroundTask = (id: number) => {
   }
 };
 
-export default { startUpload, cancelUpload, addListener, getFileInfo, canSuspendIfBackground, getRemainingBgTime, beginBackgroundTask, endBackgroundTask }
+export default { startUpload, cancelUpload, addListener, getFileInfo, canSuspendIfBackground, getRemainingBgTime, beginBackgroundTask, endBackgroundTask, setGlobalAppGroup }
