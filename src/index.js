@@ -24,6 +24,12 @@ export type StartUploadArgs = {
   parameters?: { [string]: string },
   headers?: Object,
   notification?: NotificationArgs,
+
+  /**
+   * AppGroup defined in XCode for extensions. Necessary when trying to upload things via this library
+   * in the context of ShareExtension.
+   */
+  appGroup?: string,
 };
 
 const NativeModule =

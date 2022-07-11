@@ -205,6 +205,7 @@ RCT_EXPORT_METHOD(startUpload:(NSDictionary *)options resolve:(RCTPromiseResolve
     NSString *uploadType = options[@"type"] ?: @"raw";
     NSString *fieldName = options[@"field"];
     NSString *customUploadId = options[@"customUploadId"];
+    NSString *appGroup = options[@"appGroup"];
     NSDictionary *headers = options[@"headers"];
     NSDictionary *parameters = options[@"parameters"];
 
@@ -264,7 +265,7 @@ RCT_EXPORT_METHOD(startUpload:(NSDictionary *)options resolve:(RCTPromiseResolve
             NSData *httpBody = [self createBodyWithBoundary:uuidStr path:fileURI parameters: parameters fieldName:fieldName];
 
             [request setHTTPBody: httpBody];
-            uploadTask = [[self urlSession] uploadTaskWithStreamedRequest:request];
+            uploadTask = [[self urlSession:appGroup] uploadTaskWithStreamedRequest:request];
 
 
         } else {
@@ -273,7 +274,7 @@ RCT_EXPORT_METHOD(startUpload:(NSDictionary *)options resolve:(RCTPromiseResolve
                 return;
             }
 
-            uploadTask = [[self urlSession] uploadTaskWithRequest:request fromFile:[NSURL URLWithString: fileURI]];
+            uploadTask = [[self urlSession:appGroup] uploadTaskWithRequest:request fromFile:[NSURL URLWithString: fileURI]];
         }
 
         uploadTask.taskDescription = thisUploadId;
@@ -430,7 +431,7 @@ RCT_EXPORT_METHOD(endBackgroundTask: (NSUInteger)taskId resolve:(RCTPromiseResol
     return httpBody;
 }
 
-- (NSURLSession *)urlSession {
+- (NSURLSession *)urlSession: (NSString *) groupId {
     @synchronized (self) {
         if (_urlSession == nil) {
             NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:BACKGROUND_SESSION_ID];
@@ -438,6 +439,10 @@ RCT_EXPORT_METHOD(endBackgroundTask: (NSUInteger)taskId resolve:(RCTPromiseResol
             // UPDATE: Enforce a timeout here because we will otherwise
             // not get errors if the server times out
             sessionConfiguration.timeoutIntervalForResource = 5 * 60;
+
+            if (groupId != nil && ![groupId isEqualToString:@""]) {
+                sessionConfiguration.sharedContainerIdentifier = groupId;
+            }
 
             _urlSession = [NSURLSession sessionWithConfiguration:sessionConfiguration delegate:self delegateQueue:nil];
         }
