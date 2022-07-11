@@ -86,7 +86,7 @@ static VydiaRNFileUploader *sharedInstance;
 
     // why was the delay even needed?
     //NSLog(@"RNBU startObserving: recreate urlSession if necessary");
-    [self urlSession];
+    [self urlSession:nil];
 }
 
 -(void)stopObserving {
