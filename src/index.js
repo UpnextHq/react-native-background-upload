@@ -71,6 +71,10 @@ export const getFileInfo = (path: string): Promise<Object> => {
   })
 }
 
+export const setGlobalAppGroup = (appGroup: string): Promise<void> => {
+  return NativeModule.setAppGroup(appGroup);
+}
+
 /*
 Starts uploading a file to an HTTP endpoint.
 Options object:

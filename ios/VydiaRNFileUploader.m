@@ -12,6 +12,7 @@
     NSURLSession *_urlSession;
     void (^backgroundSessionCompletionHandler)(void);
     BOOL isObserving;
+    NSString *_globalAppGroup;
 }
 
 RCT_EXPORT_MODULE();
@@ -86,7 +87,7 @@ static VydiaRNFileUploader *sharedInstance;
 
     // why was the delay even needed?
     //NSLog(@"RNBU startObserving: recreate urlSession if necessary");
-    [self urlSession:nil];
+    [self urlSession:_globalAppGroup];
 }
 
 -(void)stopObserving {
@@ -100,6 +101,11 @@ static VydiaRNFileUploader *sharedInstance;
     }
 }
 
+RCT_EXPORT_METHOD(setAppGroup:(NSString*) appGroup resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
+{
+    _globalAppGroup = appGroup;
+    resolve();
+}
 
 /*
  Gets file information for the path specified.  Example valid path is: file:///var/mobile/Containers/Data/Application/3C8A0EFB-A316-45C0-A30A-761BF8CCF2F8/tmp/trim.A5F76017-14E9-4890-907E-36A045AF9436.MOV
@@ -264,8 +270,13 @@ RCT_EXPORT_METHOD(startUpload:(NSDictionary *)options resolve:(RCTPromiseResolve
 
             NSData *httpBody = [self createBodyWithBoundary:uuidStr path:fileURI parameters: parameters fieldName:fieldName];
 
+            NSString *curAppGroup = appGroup;
+            if (curAppGroup == nil) {
+                curAppGroup = _globalAppGroup;
+            }
+
             [request setHTTPBody: httpBody];
-            uploadTask = [[self urlSession:appGroup] uploadTaskWithStreamedRequest:request];
+            uploadTask = [[self urlSession:curAppGroup] uploadTaskWithStreamedRequest:request];
 
 
         } else {
