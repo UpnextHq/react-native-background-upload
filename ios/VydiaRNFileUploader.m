@@ -446,7 +446,8 @@ RCT_EXPORT_METHOD(endBackgroundTask: (NSUInteger)taskId resolve:(RCTPromiseResol
 - (NSURLSession *)urlSession: (NSString *) groupId {
     @synchronized (self) {
         if (_urlSession == nil) {
-            NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:BACKGROUND_SESSION_ID];
+            NSString *backgroundSessionId = [BACKGROUND_SESSION_ID stringByAppendingString:groupId];
+            NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:backgroundSessionId];
 
             // UPDATE: Enforce a timeout here because we will otherwise
             // not get errors if the server times out
