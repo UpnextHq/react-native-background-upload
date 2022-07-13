@@ -446,7 +446,9 @@ RCT_EXPORT_METHOD(endBackgroundTask: (NSUInteger)taskId resolve:(RCTPromiseResol
 - (NSURLSession *)urlSession: (NSString *) groupId {
     @synchronized (self) {
         if (_urlSession == nil) {
-            NSString *backgroundSessionId = [BACKGROUND_SESSION_ID stringByAppendingString:groupId];
+            // Assume only one connection per app instance (main, share, etc) and use bundle identifier
+            NSString *backgroundSessionId = [BACKGROUND_SESSION_ID stringByAppendingString:[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIdentifier"]];
+
             NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:backgroundSessionId];
 
             // UPDATE: Enforce a timeout here because we will otherwise
